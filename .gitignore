@@ -1,0 +1,8 @@
+# IDE
+.idea/
+
+# Mongo DB
+mongo/data/*
+
+# production config
+/config.yml

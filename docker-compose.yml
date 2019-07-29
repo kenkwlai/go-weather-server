@@ -1,0 +1,27 @@
+version: '3.7'
+
+services:
+  weather-server:
+    container_name: 'weather-server'
+    build: './'
+    ports:
+      - '8000:8000'
+    volumes:
+      - './:/usr/app'
+    networks:
+      - 'backend'
+    depends_on:
+      - 'datastore'
+
+  datastore:
+    image: 'mongo:latest'
+    ports:
+      - '27017:27017'
+    volumes:
+      - './mongo/data:/data/db'
+    networks:
+      - 'backend'
+
+networks:
+  backend:
+    driver: bridge

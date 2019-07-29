@@ -1,0 +1,13 @@
+# JWT Secret
+SecretKey: some-secret
+Issuer: some-issuer
+
+# Application Port
+PORT: 8000
+
+# Database configuration
+DatabaseURI: mongodb://datastore:27017
+DatabaseName: default
+
+# OpenWeatherMap Api Key
+OpenWeatherApiKey: some-api-key
