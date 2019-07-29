@@ -14,8 +14,19 @@ func TestInitConfig(t *testing.T) {
       So(emptyConfig, ShouldBeNil)
     })
 
-    Convey("TestInitConfigFailsWhenEmpty", func() {
+    Convey("TestInitConfigFailsWhenSecretKeyIsEmpty", func() {
       viper.Set("SecretKey", "")
+      viper.Set("Issuer", "some value")
+
+      config, err := InitConfig()
+
+      So(err, ShouldNotBeNil)
+      So(config, ShouldBeNil)
+    })
+
+    Convey("TestInitConfigFailsWhenIssuerIsEmpty", func() {
+      viper.Set("SecretKey", "some value")
+      viper.Set("Issuer", "")
 
       config, err := InitConfig()
 
@@ -25,6 +36,7 @@ func TestInitConfig(t *testing.T) {
 
     Convey("TestInitConfigValid", func() {
       viper.Set("SecretKey", "some value")
+      viper.Set("Issuer", "some value")
 
       config, err := InitConfig()
 
