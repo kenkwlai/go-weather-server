@@ -25,6 +25,8 @@ func (api *API) GetToken(c *gin.Context) {
   token, err := api.App.IssueJwt(&credentials)
   if err != nil {
     c.Error(err)
+    c.String(http.StatusInternalServerError, "internal server error")
+    return
   }
 
   c.JSON(http.StatusOK, token)

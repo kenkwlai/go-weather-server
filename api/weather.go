@@ -41,6 +41,8 @@ func getFromDb(api *API, c *gin.Context) {
   weatherData, err := api.App.GetWeatherByCity(CityHk)
   if err != nil {
     c.Error(err)
+    c.String(http.StatusInternalServerError, "internal server error")
+    return
   }
 
   c.JSON(http.StatusOK, weatherData)
