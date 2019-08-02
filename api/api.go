@@ -32,6 +32,28 @@ func jwtAuthenticator() gin.HandlerFunc {
       return []byte(os.Getenv("JWT_SECRET_KEY")), nil
     })
 
+    switch err.(type) {
+    case nil:
+      if !token.Valid {
+        c.AbortWithStatus(http.StatusUnauthorized)
+        return
+      }
+
+    case *jwt.ValidationError:
+      vErr := err.(*jwt.ValidationError)
+      switch vErr.Errors {
+      case jwt.ValidationErrorExpired:
+        c.String(http.StatusUnauthorized, "Token Expired")
+        log.Println("Token Expired")
+        return
+
+      default:
+        c.AbortWithStatus(http.StatusInternalServerError)
+        log.Printf("ValidationError error: %+v\n", vErr.Errors)
+        return
+      }
+    }
+
     if claims, ok := token.Claims.(jwt.MapClaims); !ok || !token.Valid {
       if !claims.VerifyIssuer(os.Getenv("JWT_ISSUER"), true) {
         log.Println(err)
