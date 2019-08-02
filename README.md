@@ -14,6 +14,8 @@ It provides REST API to fetch current weather data in Hong Kong from [OpenWeathe
 
 4. Build and run the app with Docker ```docker-compose up --build```
 
+5. There is also a running instance hosted on https://go-weather-server.herokuapp.com/, give it a try!
+
 ## Usage
 
 The server exposes two APIs:
