@@ -10,7 +10,9 @@ It provides REST API to fetch current weather data in Hong Kong from [OpenWeathe
 
 2. Have [Docker](https://www.docker.com/) installed on your local machine 
 
-3. Build and run the app with Docker ```docker-compose up --build```
+3. Setup `.env` file for your local environment
+
+4. Build and run the app with Docker ```docker-compose up --build```
 
 ## Usage
 
