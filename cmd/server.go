@@ -4,12 +4,14 @@ import (
   "fmt"
   "github.com/gin-contrib/cors"
   "github.com/gin-gonic/gin"
+  "os"
+
   "time"
 
   "github.com/kenkwlai/weather-server/api"
 )
 
-func InitServer(api *api.API) {
+func InitServer() {
 
   corsOption := cors.New(cors.Config{
     AllowAllOrigins:  true,
@@ -24,5 +26,5 @@ func InitServer(api *api.API) {
   router.Use(corsOption)
   api.Init(router)
 
-  router.Run(fmt.Sprintf(":%d", api.Config.Port))
+  router.Run(fmt.Sprintf(":%v", os.Getenv("PORT")))
 }

@@ -4,33 +4,18 @@ import (
   "fmt"
   "github.com/dgrijalva/jwt-go"
   "github.com/gin-gonic/gin"
-  "github.com/kenkwlai/weather-server/app"
   "log"
   "net/http"
+  "os"
   "strings"
 )
 
-type API struct {
-  App    *app.App
-  Config *Config
+func Init(r *gin.Engine) {
+  r.POST("/authorize", getToken)
+  r.GET("/weather", jwtAuthenticator(), getWeather)
 }
 
-func New(a *app.App) (api *API, err error) {
-  api = &API{App: a}
-  api.Config, err = InitConfig()
-  if err != nil {
-    return nil, err
-  }
-
-  return api, nil
-}
-
-func (api *API) Init(r *gin.Engine) {
-  r.POST("/authorize", api.GetToken)
-  r.GET("/weather", api.JwtAuthenticator(), api.GetWeather)
-}
-
-func (api *API) JwtAuthenticator() gin.HandlerFunc {
+func jwtAuthenticator() gin.HandlerFunc {
   return func(c *gin.Context) {
     tokenStr := c.GetHeader("Authorization")
     if tokenStr == "" || !strings.HasPrefix(tokenStr, "Bearer") {
@@ -44,11 +29,11 @@ func (api *API) JwtAuthenticator() gin.HandlerFunc {
         return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
       }
 
-      return []byte(api.App.Config.SecretKey), nil
+      return []byte(os.Getenv("JWT_SECRET_KEY")), nil
     })
 
     if claims, ok := token.Claims.(jwt.MapClaims); !ok || !token.Valid {
-      if !claims.VerifyIssuer(api.App.Config.Issuer, true) {
+      if !claims.VerifyIssuer(os.Getenv("JWT_ISSUER"), true) {
         log.Println(err)
         c.AbortWithStatus(http.StatusUnauthorized)
         return

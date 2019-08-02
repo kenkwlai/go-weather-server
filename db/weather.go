@@ -10,10 +10,19 @@ import (
   "go.mongodb.org/mongo-driver/bson"
 )
 
-func (db *Database) GetWeather(cityName string) (*models.CurrentWeatherData, error) {
+type WeatherStore interface {
+  GetWeather(cityName string) (*models.CurrentWeatherData, error)
+  CreateWeather(weather *models.CurrentWeatherData) error
+}
+
+func WeatherMongoStore() *store {
+  return instance
+}
+
+func (weatherStore *store) GetWeather(cityName string) (*models.CurrentWeatherData, error) {
   var weather models.CurrentWeatherData
 
-  collection := db.Collection("weather")
+  collection := weatherStore.db.Collection("weather")
   ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
   filter := bson.M{
     "name": cityName,
@@ -30,8 +39,8 @@ func (db *Database) GetWeather(cityName string) (*models.CurrentWeatherData, err
   return &weather, nil
 }
 
-func (db *Database) CreateWeather(weather *models.CurrentWeatherData) error {
-  collection := db.Database.Collection("weather")
+func (weatherStore *store) CreateWeather(weather *models.CurrentWeatherData) error {
+  collection := weatherStore.db.Collection("weather")
   ctx, _ := context.WithTimeout(context.Background(), 5*time.Second)
   res, err := collection.InsertOne(ctx, weather)
 

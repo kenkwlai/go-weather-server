@@ -4,39 +4,43 @@ import (
   "context"
   "fmt"
   "log"
+  "os"
   "time"
 
   "go.mongodb.org/mongo-driver/mongo"
   "go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type Database struct {
-  *mongo.Database
+type store struct {
+  db  *mongo.Database
 }
 
-func Connect(config *Config) (*Database, error) {
+var instance *store
+
+func init() {
   // Set client options
-  clientOptions := options.Client().ApplyURI(config.DatabaseURI)
+  clientOptions := options.Client().ApplyURI(os.Getenv("MONGODB_URI"))
   ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
   // Connect to MongoDB
   client, err := mongo.Connect(ctx, clientOptions)
 
-
   if err != nil {
-   log.Fatal(err)
-    return nil, err
+    log.Fatal(err)
   }
 
   // Check the connection
   err = client.Ping(context.TODO(), nil)
 
   if err != nil {
-   log.Fatal(err)
-   return nil, err
+    log.Fatal(err)
   }
 
   fmt.Println("Connected to MongoDB!")
 
-  return &Database{client.Database(config.DatabaseName)}, nil
+  instance = &store{client.Database(os.Getenv("MONGODB_NAME"))}
+}
+
+func Close() error {
+  return instance.db.Client().Disconnect(context.Background())
 }

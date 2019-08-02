@@ -3,11 +3,12 @@ package api
 import (
   "encoding/json"
   "github.com/gin-gonic/gin"
+  "github.com/kenkwlai/weather-server/app"
   "github.com/kenkwlai/weather-server/models"
   "net/http"
 )
 
-func (api *API) GetToken(c *gin.Context) {
+func getToken(c *gin.Context) {
   var credentials models.UserCredentials
 
   err := json.NewDecoder(c.Request.Body).Decode(&credentials)
@@ -22,7 +23,7 @@ func (api *API) GetToken(c *gin.Context) {
     return
   }
 
-  token, err := api.App.IssueJwt(&credentials)
+  token, err := app.IssueJwt(&credentials)
   if err != nil {
     c.Error(err)
     c.String(http.StatusInternalServerError, "internal server error")
