@@ -32,8 +32,9 @@ func getWeather(c *gin.Context) {
   }
 
   err = store(weatherData)
+  // should be fault-tolerant here
   if err != nil {
-    panic(err)
+    log.Println(err)
   }
 
   c.JSON(http.StatusOK, weatherData)
