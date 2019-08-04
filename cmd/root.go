@@ -5,6 +5,7 @@ import (
 )
 
 func InitApp() {
+  db.Init()
   defer db.Close()
 
   InitServer()

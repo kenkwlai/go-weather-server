@@ -2,8 +2,8 @@ package app
 
 import (
   "github.com/dgrijalva/jwt-go"
+  "github.com/kenkwlai/weather-server/config"
   "github.com/kenkwlai/weather-server/models"
-  "os"
   "time"
 )
 
@@ -15,24 +15,27 @@ type Token struct {
 const TimezoneLocationName = "Asia/Hong_Kong"
 const TimeFormatLayout = "2006-01-02T15:04:05Z0700"
 
+var jwtIssuer = config.GetOrDefault("JWT_ISSUER", "some-issuer")
+var jwtSecretKey = config.GetOrDefault("JWT_SECRET_KEY", "some-secret-key")
+
 func IssueJwt(user *models.UserCredentials) (*Token, error) {
   // sign the jwt token
   token := jwt.New(jwt.SigningMethodHS256)
   claims := make(jwt.MapClaims)
   loc, err := time.LoadLocation(TimezoneLocationName)
   if err != nil {
-    panic(err)
+    return nil, err
   }
 
   now := time.Now().In(loc)
   exp := now.Add(time.Hour * time.Duration(1))
   claims["exp"] = exp.Unix()
   claims["iat"] = now.Unix()
-  claims["iss"] = os.Getenv("JWT_ISSUER")
+  claims["iss"] = jwtIssuer
   claims["username"] = user.Username
   token.Claims = claims
 
-  tokenString, err := token.SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
+  tokenString, err := token.SignedString([]byte(jwtSecretKey))
   if err != nil {
     return nil, err
   }

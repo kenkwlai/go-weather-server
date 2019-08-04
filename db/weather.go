@@ -33,6 +33,7 @@ func (weatherStore *store) GetWeather(cityName string) (*models.CurrentWeatherDa
   err := collection.FindOne(ctx, filter, findOptions).Decode(&weather)
 
   if err != nil {
+    log.Println(err)
     return nil, err
   }
 
@@ -45,7 +46,7 @@ func (weatherStore *store) CreateWeather(weather *models.CurrentWeatherData) err
   res, err := collection.InsertOne(ctx, weather)
 
   if err != nil {
-    log.Fatal(err)
+    log.Println(err)
     return err
   }
 
